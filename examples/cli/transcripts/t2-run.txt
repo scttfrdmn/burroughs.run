@@ -1,0 +1,11 @@
+$ mkdir -p out
+$ burroughs run --dir ./data:/data --scratch ./out:/out --env GREETING=hi guest.wasm -- first second < in.txt
+args: [guest.wasm first second]
+GREETING env: hi
+env entries: 1
+/data/greeting.txt: "hello from the host"
+write under /data: open /data/new.txt: Capabilities insufficient
+wrote /out/result.txt
+stdin lines: 3
+$ cat out/result.txt
+written by the guest

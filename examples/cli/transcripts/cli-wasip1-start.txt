@@ -1,0 +1,3 @@
+$ burroughs run guest.wasm _start
+burroughs: a wasip1 command takes its arguments after --, e.g. run guest.wasm -- ARG
+[exit 2]

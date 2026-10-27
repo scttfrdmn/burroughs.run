@@ -1,0 +1,104 @@
+site_name: Burroughs
+site_description: A WebAssembly runtime in pure Go, language-directed for Go itself.
+site_url: https://burroughs.run/
+repo_url: https://github.com/scttfrdmn/burroughs
+repo_name: scttfrdmn/burroughs
+# The docs are not in the engine repository, so there is nothing to edit there.
+edit_uri: ""
+
+copyright: >
+  Copyright &copy; 2026 Scott Friedman &middot; Apache-2.0.
+
+theme:
+  name: material
+  custom_dir: overrides
+  font:
+    text: Atkinson Hyperlegible
+    code: Atkinson Hyperlegible Mono
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.tabs
+    - navigation.indexes
+
+plugins:
+  - search
+  - blog:
+      blog_dir: blog
+      # URLs and visible UI are date-free; the date in front matter is for
+      # ordering and RSS metadata (trnsci's convention).
+      post_url_format: "{slug}"
+      archive: false
+      categories: true
+      pagination_per_page: 10
+
+hooks:
+  - hooks/wip.py
+
+nav:
+  - Home: index.md
+  - Docs:
+      - docs/index.md
+      - Getting started: docs/getting-started.md
+      - CLI reference: docs/cli.md
+      - Embedding guide: docs/embedding.md
+      - Tutorials:
+          - Call an exported function: docs/tutorials/01-call-an-export.md
+          - Run a wasip1 Go program: docs/tutorials/02-wasip1-go-program.md
+          - Components: docs/tutorials/03-components.md
+          - Traps, refusals and gates: docs/tutorials/04-traps-and-refusals.md
+      - Concepts: docs/concepts.md
+      - Known limits and status: docs/limits-and-status.md
+      - Roadmap: docs/roadmap.md
+  - Blog:
+      - blog/index.md
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        # Mermaid diagrams in fenced code blocks: ```mermaid ... ```
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  # Example code, expected output and CLI transcripts are included from
+  # examples/, which CI runs against the latest Burroughs release.
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+      restrict_base_path: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    absolute_links: warn
+    unrecognized_links: warn

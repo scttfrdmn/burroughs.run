@@ -1,0 +1,13 @@
+malformed -> ErrMalformed
+            burroughs: malformed module: magic header not detected
+invalid   -> ErrInvalid
+            burroughs: invalid module: type mismatch: instruction requires [i32] but stack has [i64] (instr 1: end) (func 0)
+memory64  -> ErrGated
+            burroughs: proposal gate is off in this build: memory64: feature gate disabled
+tailcall  -> ErrGated
+            burroughs: proposal gate is off in this build: return_call: feature gate disabled
+imports   -> ErrUnlinkable
+            burroughs: module has unsupplied imports: unknown import: "env" "log" (interp: link failed)
+shared    -> ok
+            inc -> [i32:0] <nil>
+            wait(timeout 1ms) -> [i32:2] <nil> (2 means timed-out)

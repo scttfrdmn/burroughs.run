@@ -1,0 +1,19 @@
+record-synth exports: [addrec makerec peek]
+addrec({a:10, b:32}) = 42 true rendered u32(42)
+makerec() = {name: "burroughs", n: 42}  (String() of the name field: string("burroughs"))
+missing field: canon: record field "b" is missing; a record's fields must all be supplied, because no WIT value means "absent"
+invalid UTF-8: a component string must be valid UTF-8, and this one is not; the Canonical ABI's string is UTF-8 while a Go string is an arbitrary byte sequence, so the two differ exactly here
+wrong argument type at the call: burroughs: feature not implemented in this phase: component: unsupported instantiation form: export "addrec" parameter "p" is declared record{a: u32, b: u32} but the value given is u32; the types must match structurally, so a list of the wrong element type is refused here rather than written at the wrong stride
+string-echo exports: [run-async run-sync]
+run-sync("héllo, wörld") = 14 (bytes of UTF-8 the guest saw echoed)
+string-arg-realloc-synth exports: [echo echo-misaligned echo-trap peek sum-list sum-list-misaligned]
+sum-list([1, 2, 39]) = 42
+a string in a list<u32>: list element 0 is string, but the list's element type is u32; the types must match structurally, so a list of the wrong element type is refused here rather than lowered at the wrong stride
+trap-then-call-plain exports: [ok run]
+run: trap: unreachable | is *Trap: true
+ok after the trap: burroughs: the component instance is locked by an earlier trap: trap: unreachable
+  errors.Is ErrInstanceLocked: true | wraps the *Trap: true
+Close: <nil> | second Close: <nil>
+call after Close: burroughs: the component is closed: "ok" was not called true
+p3hello: exit 0, err <nil>, stdout "Hello, world!\n"
+p3hello with zero config: exit 0, err <nil> (stdout discarded)

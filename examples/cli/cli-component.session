@@ -1,0 +1,3 @@
+burroughs run testdata/p3hello.wasm
+burroughs run testdata/cli-run-trap.wasm
+burroughs run testdata/record-synth.wasm addrec

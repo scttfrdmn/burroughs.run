@@ -1,0 +1,3 @@
+$ burroughs run --features=gc --dir ./data:/data guest.wasm
+burroughs: feature not implemented in this phase: unknown feature "gc"; this build recognizes "threads"
+[exit 5]

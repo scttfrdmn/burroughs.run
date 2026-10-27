@@ -1,0 +1,8 @@
+$ burroughs run testdata/p3hello.wasm
+Hello, world!
+$ burroughs run testdata/cli-run-trap.wasm
+burroughs: trap: unreachable
+[exit 4]
+$ burroughs run testdata/record-synth.wasm addrec
+burroughs: a component runs its wasi:cli/run world; it takes no function name or --dir
+[exit 2]

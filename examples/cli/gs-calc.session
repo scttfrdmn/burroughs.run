@@ -1,0 +1,7 @@
+#cwd embed-core
+burroughs run calc.wasm
+burroughs run calc.wasm add i32:2 i32:40
+burroughs run calc.wasm divmod i32:17 i32:5
+burroughs run calc.wasm hypot f64:3 f64:4
+burroughs run calc.wasm divmod i32:1 i32:0
+burroughs run calc.wasm add 1 2

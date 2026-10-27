@@ -1,0 +1,14 @@
+exports: [add mul64 hypot divmod boom]
+add: 42 spelled i32:42
+mul64: 1099511627776
+hypot: 5 type f64
+divmod: i32:3 i32:2
+wrong argument type: interp: "add" parameter 0 is i32, got i64
+wrong arity: interp: "add" takes 2 arguments, got 1
+no such export: interp: no exported function "nope"
+trap: "integer divide by zero" (Error(): trap: integer divide by zero)
+trap: "unreachable"
+after the traps: [i32:2] <nil>
+global calls = i32:3
+reading a function as a global: interp: no exported global "add"
+ParseValue("i32:4294967295") = i32:-1 -1

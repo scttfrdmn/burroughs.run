@@ -1,0 +1,98 @@
+# Build and deploy burroughs.run to GitHub Pages.
+#
+# Nothing deploys unless both jobs pass:
+#   examples - every example program and CLI transcript the docs include runs
+#              against the latest Burroughs release tag and matches its
+#              committed expected output (scripts/run-examples.sh).
+#   build    - the landing page's release block is regenerated from the
+#              engine's CHANGELOG at that tag, every docs code block is tied
+#              to an example or labelled a fragment, `mkdocs build --strict`
+#              is clean, and every internal link in the built site resolves.
+#
+# Everything is pinned: actions by commit SHA, Go and Python by exact version,
+# uv by exact version, and the Python packages by hash in requirements.txt.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  # Re-run daily so a new Burroughs release is noticed (and the site's
+  # examples and release block are checked against it) without a site commit.
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  GO_VERSION: "1.27.3"
+  UV_VERSION: "0.13.5"
+  PYTHON_VERSION: "3.13.18"
+
+jobs:
+  examples:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - name: Run every example against the latest Burroughs release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOTOOLCHAIN: local
+          WORK: ${{ runner.temp }}/examples
+        run: scripts/run-examples.sh
+
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: false
+      - name: Install Python and the pinned MkDocs toolchain
+        run: |
+          uv python install "$PYTHON_VERSION"
+          uv venv --python "$PYTHON_VERSION" .venv
+          VIRTUAL_ENV="$PWD/.venv" uv pip install --require-hashes -r requirements.txt
+      - name: Regenerate the release block from the engine's CHANGELOG at the latest tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .venv/bin/python -I scripts/release_snippet.py
+      - name: Every code block is an example include, a fragment, or a diagram
+        run: .venv/bin/python -I scripts/check_code_blocks.py
+      - name: Build (strict)
+        env:
+          NO_MKDOCS_2_WARNING: "1"
+        run: .venv/bin/mkdocs build --strict --site-dir site
+      - name: Check internal links in the built site
+        run: .venv/bin/python -I scripts/linkcheck.py site
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        if: github.event_name != 'pull_request'
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name != 'pull_request'
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [examples, build]
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -1,0 +1,57 @@
+/* burroughs.run — the shared tokens of Scott Friedman's project sites:
+ * Atkinson Hyperlegible type (set in mkdocs.yml), an indigo brand, slate neutrals.
+ * Brand blues from spore.host's theme; slate neutrals from provabl.dev's.
+ */
+
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #4059e5;        /* brand indigo */
+  --md-primary-fg-color--light: #6b7ff0;
+  --md-primary-fg-color--dark: #1e3ea6;  /* brand navy */
+  --md-accent-fg-color: #1e3ea6;
+  --md-typeset-a-color: #3346c4;         /* 6.4:1 on white */
+  --md-default-fg-color: #0f172a;        /* slate-900 */
+  --md-default-fg-color--light: #475569; /* slate-600 */
+  --md-code-bg-color: #f1f5f9;           /* slate-100 */
+  --md-code-fg-color: #1e293b;           /* slate-800 */
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #4059e5;
+  --md-primary-fg-color--dark: #1e3ea6;
+  --md-accent-fg-color: #8aa2ff;
+  --md-typeset-a-color: #8aa2ff;         /* brand-1 lightened for AA on dark */
+  --md-default-bg-color: #0c1017;
+  --md-default-fg-color: #e2e8f0;
+  --md-default-fg-color--light: #94a3b8;
+  --md-code-bg-color: #0f1923;
+  --md-code-fg-color: #cbd5e1;
+}
+
+.md-typeset h1 { letter-spacing: -0.025em; }
+.md-typeset h2 { letter-spacing: -0.02em; }
+
+/* Landing hero. */
+.bx-hero { padding: 0.5rem 0 1rem; }
+.bx-hero .bx-pipeline {
+  font-family: var(--md-code-font-family);
+  font-size: 1.1rem;
+  color: var(--md-default-fg-color--light);
+}
+.bx-hero .bx-tagline { font-size: 1.15rem; line-height: 1.7; }
+
+/* Code that is NOT run by this site's CI is labelled as a fragment. */
+.md-typeset .fragment > pre::before,
+.md-typeset .fragment pre::before {
+  content: "Fragment: not run by this site's CI";
+  display: block;
+  font-family: var(--md-text-font-family);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--md-default-fg-color--light);
+  padding: 0.4rem 1.2em 0;
+}
+
+/* The generated release block on the landing page. */
+.bx-release { border-left: 0.2rem solid var(--md-primary-fg-color); padding-left: 1rem; }
+.bx-generated { font-size: 0.7rem; color: var(--md-default-fg-color--light); }

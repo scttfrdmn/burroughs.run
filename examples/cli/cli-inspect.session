@@ -1,0 +1,2 @@
+burroughs inspect embed-core/calc.wasm
+burroughs inspect testdata/p3hello.wasm

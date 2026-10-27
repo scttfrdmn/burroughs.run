@@ -1,0 +1,2 @@
+$ burroughs version
+burroughs v0.0.1 — the machine Burroughs never built

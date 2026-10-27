@@ -1,0 +1,6 @@
+$ burroughs run guest.wasm < /dev/null
+args: [guest.wasm]
+GREETING env: 
+env entries: 0
+read: open /data/greeting.txt: Bad file number
+[exit 3]

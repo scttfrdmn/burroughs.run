@@ -1,0 +1,5 @@
+#cwd refusals
+burroughs run sharedcmd.wasm
+BURROUGHS_THREADS=0 burroughs run sharedcmd.wasm
+BURROUGHS_THREADS=0 burroughs run --features=threads sharedcmd.wasm
+BURROUGHS_THREADS=0 burroughs run --features=threads shared.wasm wait

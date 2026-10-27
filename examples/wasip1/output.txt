@@ -1,0 +1,13 @@
+IsWASIP1Command: true <nil>
+exit code 7, err <nil>
+--- guest stdout
+args: [guest fail]
+GREETING env: hi
+env entries: 1
+/data/greeting.txt: "hello from the host"
+write under /data: open /data/new.txt: Capabilities insufficient
+wrote /out/result.txt
+stdin lines: 2
+--- guest stderr
+--- host sees result.txt: "written by the guest\n" <nil>
+--- no grants: exit code 3, err <nil>, stderr "read: open /data/greeting.txt: Bad file number\n"

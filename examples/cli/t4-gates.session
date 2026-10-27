@@ -1,0 +1,3 @@
+BURROUGHS_COMPONENTS=0 burroughs run testdata/p3hello.wasm
+BURROUGHS_ASYNC=0 burroughs run testdata/p3async-hello.wasm
+burroughs run testdata/p3async-hello.wasm

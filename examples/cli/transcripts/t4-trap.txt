@@ -1,0 +1,3 @@
+$ burroughs run embed-core/calc.wasm divmod i32:1 i32:0
+burroughs: trap: integer divide by zero
+[exit 4]

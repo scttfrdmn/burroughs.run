@@ -1,0 +1,9 @@
+$ burroughs run --dir ./data:/data guest.wasm -- fail < /dev/null
+args: [guest.wasm fail]
+GREETING env: 
+env entries: 0
+/data/greeting.txt: "hello from the host"
+write under /data: open /data/new.txt: Capabilities insufficient
+write under /out: open /out/result.txt: Bad file number
+stdin lines: 0
+[exit 7]

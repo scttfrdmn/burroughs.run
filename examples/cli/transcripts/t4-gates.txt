@@ -1,0 +1,8 @@
+$ BURROUGHS_COMPONENTS=0 burroughs run testdata/p3hello.wasm
+burroughs: proposal gate is off in this build: gate:components is off in this build (BURROUGHS_COMPONENTS=0); unset it to run a component (the gate is on by default as of the 2026-09-11 flip)
+[exit 6]
+$ BURROUGHS_ASYNC=0 burroughs run testdata/p3async-hello.wasm
+burroughs: proposal gate is off in this build: gate:async is off in this build: this component uses the async component-model ABI (an async canon lower); unset BURROUGHS_ASYNC to run it (the gate is on by default as of the 2026-09-18 flip)
+[exit 6]
+$ burroughs run testdata/p3async-hello.wasm
+Hello, world!

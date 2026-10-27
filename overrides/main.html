@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{#-
+  Mermaid, pinned by exact version and Subresource Integrity. Material loads
+  mermaid@11 (a floating major) from unpkg only when `mermaid` is undefined, so
+  defining it here first keeps that unpinned fetch from ever happening. Loaded
+  only on pages that contain a diagram.
+-#}
+{% block scripts %}
+  {% if page and page.content and 'class="mermaid"' in page.content %}
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js"
+            integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2"
+            crossorigin="anonymous"></script>
+  {% endif %}
+  {{ super() }}
+{% endblock %}

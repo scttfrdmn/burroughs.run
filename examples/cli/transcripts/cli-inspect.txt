@@ -1,0 +1,11 @@
+$ burroughs inspect embed-core/calc.wasm
+embed-core/calc.wasm: wasm v1, 6 section(s)
+  [0] type           29 bytes
+  [1] function        7 bytes
+  [2] global          6 bytes
+  [3] export         47 bytes
+  [4] code           63 bytes
+  [5] custom         24 bytes
+$ burroughs inspect testdata/p3hello.wasm
+burroughs: malformed module: unknown binary version: 65549
+[exit 3]

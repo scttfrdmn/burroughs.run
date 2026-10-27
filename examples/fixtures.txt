@@ -1,0 +1,10 @@
+# Component fixtures fetched from scttfrdmn/burroughs at the release tag,
+# path internal/component/testdata/. Used by examples/component and the CLI transcripts.
+record-synth.wasm
+string-echo.wasm
+string-arg-realloc-synth.wasm
+trap-then-call-plain.wasm
+p3hello.wasm
+p3echo.wasm
+cli-run-trap.wasm
+p3async-hello.wasm

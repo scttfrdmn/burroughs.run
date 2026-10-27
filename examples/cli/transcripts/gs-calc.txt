@@ -1,0 +1,18 @@
+$ burroughs run calc.wasm
+add
+mul64
+hypot
+divmod
+boom
+$ burroughs run calc.wasm add i32:2 i32:40
+i32:42
+$ burroughs run calc.wasm divmod i32:17 i32:5
+i32:3 i32:2
+$ burroughs run calc.wasm hypot f64:3 f64:4
+f64:5
+$ burroughs run calc.wasm divmod i32:1 i32:0
+burroughs: trap: integer divide by zero
+[exit 4]
+$ burroughs run calc.wasm add 1 2
+burroughs: "1" has no type prefix — values are spelled `i32:42`, `f64:nan`, `extern:3`, `null:func`
+[exit 1]

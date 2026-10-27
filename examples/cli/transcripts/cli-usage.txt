@@ -1,0 +1,6 @@
+$ burroughs
+usage: burroughs <command> [arguments]
+  run [--strict] file.wasm [func [value...]]   instantiate and call an export
+  inspect file.wasm                            section-level module dump
+  version
+[exit 2]

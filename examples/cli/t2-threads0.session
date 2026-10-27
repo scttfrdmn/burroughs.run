@@ -1,0 +1,2 @@
+#cwd wasip1
+BURROUGHS_THREADS=0 burroughs run --dir ./data:/data guest.wasm -- fail < /dev/null

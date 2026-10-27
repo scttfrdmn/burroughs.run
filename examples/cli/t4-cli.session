@@ -1,0 +1,5 @@
+burroughs run refusals/malformed.wasm
+burroughs run refusals/invalid.wasm
+burroughs run refusals/memory64.wasm
+burroughs run refusals/imports.wasm
+burroughs run refusals/shared.wasm wait

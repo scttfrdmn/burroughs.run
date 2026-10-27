@@ -1,0 +1,4 @@
+#cwd wasip1
+mkdir -p out
+burroughs run --dir ./data:/data --scratch ./out:/out --env GREETING=hi guest.wasm -- first second < in.txt
+cat out/result.txt

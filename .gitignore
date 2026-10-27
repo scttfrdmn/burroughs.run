@@ -1,0 +1,12 @@
+# MkDocs output
+/site/
+# Local Python environment
+/.venv/
+# Built by scripts/run-examples.sh in CI (about 2.6 MB); never committed
+/examples/wasip1/guest.wasm
+/examples/wasip1/out/
+# Component fixtures, fetched from the engine repository at the release tag
+/examples/testdata/
+/examples/component/testdata/
+__pycache__/
+.DS_Store

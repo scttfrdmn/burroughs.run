@@ -1,0 +1,5 @@
+echo "echo me" | burroughs run testdata/p3echo.wasm -- a b
+burroughs run --dir ./wasip1/data:/data testdata/p3hello.wasm
+burroughs run --features=threads testdata/p3hello.wasm
+burroughs run --env GREETING=hi --scratch ./wasip1/out:/out testdata/p3hello.wasm
+burroughs run --features=gc embed-core/calc.wasm add i32:1 i32:2

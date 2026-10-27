@@ -1,0 +1,13 @@
+$ burroughs run embed-core/calc.wasm add i32:2 i32:40
+i32:42
+$ burroughs run embed-core/calc.wasm divmod i32:17 i32:5
+i32:3 i32:2
+$ burroughs run embed-core/calc.wasm divmod i32:1 i32:0
+burroughs: trap: integer divide by zero
+[exit 4]
+$ burroughs run embed-core/calc.wasm add i32:1
+burroughs: interp: "add" takes 2 arguments, got 1
+[exit 1]
+$ burroughs run embed-core/calc.wasm nope
+burroughs: interp: no exported function "nope"
+[exit 1]

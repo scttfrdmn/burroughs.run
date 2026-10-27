@@ -1,0 +1,32 @@
+$ burroughs run --dir ./data::/data guest.wasm
+invalid value "./data::/data" for flag -dir: --dir "./data::/data": the guest path ":/data" starts with a colon, so nothing can open through it. Burroughs' separator is ONE colon (--dir HOST:/guest/path); two is wasmtime's grammar
+usage: burroughs run [--strict] [--dir HOST[:/GUEST]]... [--scratch HOST[:/GUEST]]... [--env NAME[=VALUE]]... [--features NAME[,NAME]]... <file.wasm> [-- <arg>...] | [<func> [<value>...]]
+
+A wasip1 command (imports wasi_snapshot_preview1, exports _start) runs; its argv is what follows --, and its exit code becomes this process's. --dir grants it a directory, capability-based: nothing is visible unless named.
+
+--dir's separator is ONE colon: --dir /host/path:/guest/path, and the guest path must be absolute.
+A bare --dir /host/path maps it under its own resolved name. A relative guest path and wasmtime's TWO-colon form (--dir host::guest) are both refused by name (#828): each would grant a mapping nothing can open, and report a file error for a flag mistake.
+
+The guest's environment is EMPTY unless named with --env (#830). Until this release the host's whole
+environment was passed through, which contradicted --dir's own model; a guest that read an inherited
+variable now needs --env NAME for it. Note PWD: a Go wasip1 guest takes its working directory from
+it, so --env PWD=/x changes where a relative path resolves.
+
+--dir is READ-ONLY. --scratch is the only flag that lets a guest change the host's filesystem: it grants
+a writable directory and writes are confined beneath it. Bind mounts, /proc and device files are NOT
+excluded — the operator chooses the directory, and the confinement does not prohibit what is inside
+it (ADR 0091).
+Any other module: with a function named it is invoked; with none its exports are listed.
+
+Values are typed: i32:42  i64:-1  f32:nan  f64:inf  v128:0x0:0x0  extern:3  null:func
+  -dir value
+    	grant a wasip1 command a directory as HOST[:/GUEST], ONE colon (repeatable); no directory is visible unless named (decision 0083). GUEST must be absolute; a relative one, and wasmtime's HOST::GUEST, are refused (#828)
+  -env value
+    	pass NAME[=VALUE] into the guest's environment (repeatable). NOTHING is passed unless named (#830); a bare NAME is refused when unset in this environment
+  -features value
+    	proposal capabilities the guest requires, comma-separated (repeatable); currently: threads. An unrecognized name is refused (ADR 0088)
+  -scratch value
+    	grant a wasip1 command a WRITABLE directory as HOST[:/GUEST] (repeatable). The only flag that lets a guest change the host's filesystem; writes are confined beneath it, and --dir stays read-only (ADR 0091)
+  -strict
+    	refuse a module the validator could not fully check, instead of running it
+[exit 2]
