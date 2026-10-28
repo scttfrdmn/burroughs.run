@@ -9,11 +9,13 @@
 4. Write them, verbatim apart from relative links made absolute at the tag, to
    generated/release.md, which docs/index.md includes.
 
-The landing page must say that no public path can yet start a second
-shared-memory thread (#1122). That is v0.11.0's first Known limit; when a
-release lifts it, the limit leaves the list and this check fails on purpose,
-so the landing page's hand-written prose gets re-read in the same change.
-Set ALLOW_NO_1122=1 once that has happened.
+5. Check that every hand-written page's version marker names this tag. A page says which release it was written
+   against ("Written against `vX.Y.Z`", "As of `vX.Y.Z`", "as of `vX.Y.Z`"), and a new release fails the build
+   until each marked page has been re-read and its marker moved. The blog is exempt: its posts are history.
+
+   This replaced a one-off guard keyed to #1122, the limit v0.12.0 lifted, which made the build fail until the
+   landing page's prose was re-read. That guard fired exactly once, on v0.12.0, which is the case it was for. The
+   marker check generalises it to every release.
 
 Usage: python3 scripts/release_snippet.py [--check]
   --check   do not write; fail if generated/release.md differs from what would be written.
@@ -91,6 +93,31 @@ def extract(text):
     sys.exit("release_snippet: no **Known limits** paragraph before the first ### subsection")
 
 
+LIST_ITEM = re.compile(r"^\s*[-*] ")
+
+
+def list_break(p):
+    """Put a blank line before the first item of each list in a lead paragraph.
+
+    The CHANGELOG writes a list directly under the sentence that introduces it, which CommonMark (and GitHub)
+    renders as a list, but Python-Markdown does not: without a blank line before it, the list is read as the
+    paragraph's own text, and its items run together inline. v0.12.0's block was the first whose lead carried lists.
+    """
+    lines = p.split("\n")
+    out = []
+    in_list = False
+    for line in lines:
+        item = bool(LIST_ITEM.match(line))
+        if item and not in_list and out and out[-1].strip():
+            out.append("")
+        if item:
+            in_list = True
+        elif not line.startswith(" "):
+            in_list = False
+        out.append(line)
+    return "\n".join(out)
+
+
 def render(tag, date, contract, lead, limits_intro, limits):
     src = f"https://github.com/{REPO}/blob/{tag}/CHANGELOG.md"
     out = [
@@ -105,7 +132,7 @@ def render(tag, date, contract, lead, limits_intro, limits):
     if contract:
         out += [contract, ""]
     for p in lead:
-        out += [p, ""]
+        out += [list_break(p), ""]
     out += [limits_intro, "", limits, "", "</div>", ""]
     out += [
         f'<p class="bx-generated">Quoted from the <a href="{src}">{tag} block of the engine\'s CHANGELOG.md</a>, '
@@ -119,15 +146,37 @@ def render(tag, date, contract, lead, limits_intro, limits):
     return re.sub(r"(?m)^(\s*)#(?=[^#\s])", r"\1\\#", md)
 
 
+MARKER = re.compile(r"(?:Written against|[Aa]s of) `(v\d+\.\d+\.\d+)`")
+
+
+def stale_markers(tag):
+    """Every docs page outside the blog whose version marker names a release other than tag, with its line."""
+    found = []
+    docs = os.path.join(ROOT, "docs")
+    for dirpath, dirnames, filenames in os.walk(docs):
+        dirnames[:] = [d for d in dirnames if d != "blog"]
+        for name in sorted(filenames):
+            if not name.endswith(".md"):
+                continue
+            path = os.path.join(dirpath, name)
+            with open(path, encoding="utf-8") as f:
+                for n, line in enumerate(f, 1):
+                    for m in MARKER.finditer(line):
+                        if m.group(1) != tag:
+                            found.append(f"{os.path.relpath(path, ROOT)}:{n}: {m.group(0)}")
+    return found
+
+
 def main():
     check = "--check" in sys.argv[1:]
     tag = os.environ.get("BURROUGHS_TAG") or latest_tag.latest(REPO)
     date, text = block(fetch(tag), tag.lstrip("v"))
     contract, lead, limits_intro, limits = extract(text)
-    if "#1122" not in limits and "/issues/1122" not in limits and not os.environ.get("ALLOW_NO_1122"):
+    stale = stale_markers(tag)
+    if stale:
         sys.exit(
-            "release_snippet: the Known limits of " + tag + " no longer cite #1122 (no public path starts a "
-            "second shared-memory thread). Re-read docs/index.md's prose, then set ALLOW_NO_1122=1."
+            "release_snippet: these pages were written against a different release than " + tag + ". Re-read each, "
+            "bring what it says up to " + tag + ", then move its marker:\n  " + "\n  ".join(stale)
         )
     md = render(tag, date, contract, lead, limits_intro, limits)
     if check:

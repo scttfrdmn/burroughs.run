@@ -3,7 +3,7 @@ addrec({a:10, b:32}) = 42 true rendered u32(42)
 makerec() = {name: "burroughs", n: 42}  (String() of the name field: string("burroughs"))
 missing field: canon: record field "b" is missing; a record's fields must all be supplied, because no WIT value means "absent"
 invalid UTF-8: a component string must be valid UTF-8, and this one is not; the Canonical ABI's string is UTF-8 while a Go string is an arbitrary byte sequence, so the two differ exactly here
-wrong argument type at the call: burroughs: feature not implemented in this phase: component: unsupported instantiation form: export "addrec" parameter "p" is declared record{a: u32, b: u32} but the value given is u32; the types must match structurally, so a list of the wrong element type is refused here rather than written at the wrong stride
+wrong argument type at the call: component: export "addrec" parameter "p" is declared record{a: u32, b: u32} but the value given is u32; the types must match structurally, so a list of the wrong element type is refused here rather than written at the wrong stride (a caller error, as above; #1129)
 string-echo exports: [run-async run-sync]
 run-sync("héllo, wörld") = 14 (bytes of UTF-8 the guest saw echoed)
 string-arg-realloc-synth exports: [echo echo-misaligned echo-trap peek sum-list sum-list-misaligned]

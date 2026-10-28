@@ -41,23 +41,22 @@ language would run best on them. Wasm is a stack machine too.
 
 ## What works today, in plain terms
 
-As of `v0.11.0` (the release quoted below, when this page was written):
+As of `v0.12.0` (the release quoted below, when this page was written):
 
-- **Core WebAssembly** (the MVP and Wasm 2.0 features, plus SIMD and relaxed SIMD) runs, from Go
-  (`burroughs.Instantiate`) or from the command line (`burroughs run`). The spec suite's core board reports no
-  failures.
+- **Core WebAssembly** (the MVP and Wasm 2.0 features, plus SIMD, relaxed SIMD, and four Wasm 3.0 proposals:
+  extended constant expressions, tail calls, multi-memory and memory64) runs, from Go (`burroughs.Instantiate`) or
+  from the command line (`burroughs run`). The spec suite's core board reports no failures.
 - **Go programs built with `GOOS=wasip1 GOARCH=wasm`** run through `WASIP1Config.Run` or `burroughs run`, with
   arguments, an environment, the standard streams, and read-only or writable directory grants.
+- **A WASI preview-1 guest can start its own threads.** A module that imports `"burroughs" "spawn"` and exports
+  `mstart` starts agents on OS threads over its shared memory, through those same two paths. That is the door the
+  Phase 4 Go fork uses, so a fork-built Go program runs with real threads. Core `Instantiate` supplies no imports,
+  so it still starts no second thread, and host-started threads are not built.
 - **Components** load, and their typed exports can be called from Go with `u32`, `string`, `list` and `record`
   values. The async component ABI, cancellation through `context`, and `wasi:cli/run` worlds work.
-- **The threads grammar is admitted, but threads are not.** Shared memories and atomics are accepted by default,
-  but **no public path can yet start a second thread over a shared memory**
-  ([#1122](https://github.com/scttfrdmn/burroughs/issues/1122)), so a public module's shared memory has one agent.
-  The thread machinery exists inside the engine and is measured there. Guest-started threads are the next
-  release's work.
-- **Not yet:** stack switching, a full WASI 0.3 host, and six proposals that stay gated off (GC, exception
-  handling, tail calls, memory64, multi-memory, extended-const). Linux and macOS (64-bit) are built and tested; Windows
-  runs the tests in a separate CI workflow as a measurement, not a gate, and is unsupported.
+- **Not yet:** stack switching, a full WASI 0.3 host, and two proposals that stay gated off (GC and exception
+  handling). Linux and macOS (64-bit) are built and tested; Windows runs the tests in a separate CI workflow as a
+  measurement, not a gate, and is unsupported.
 
 The [known limits page](docs/limits-and-status.md) has the details, with issue numbers.
 

@@ -51,8 +51,9 @@ var boom = []byte{
 	0x0a, 0x05, 0x01, 0x03, 0x00, 0x00, 0x0b, // code: no locals, unreachable, end
 }
 
-// memory64 is (module (memory i64 1)), which needs the memory64 gate.
-var memory64 = []byte{0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x05, 0x03, 0x01, 0x04, 0x01}
+// gcType is (module (type (struct (field i32)))), which needs the GC gate: off by default. (This was a memory64
+// module until v0.12.0 turned memory64 on.)
+var gcType = []byte{0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x01, 0x05, 0x01, 0x5f, 0x01, 0x7f, 0x00}
 
 func main() {
 	in, err := burroughs.Instantiate(boom)
@@ -67,8 +68,8 @@ func main() {
 	_, err = burroughs.Instantiate([]byte("not a wasm module"))
 	fmt.Println("malformed bytes: ", describe(err))
 
-	_, err = burroughs.Instantiate(memory64)
-	fmt.Println("memory64 module: ", describe(err))
+	_, err = burroughs.Instantiate(gcType)
+	fmt.Println("GC module:       ", describe(err))
 
 	_, err = burroughs.WASIP1Config{Features: []burroughs.Feature{"gc"}}.Run(boom)
 	fmt.Println("Feature \"gc\":    ", describe(err))

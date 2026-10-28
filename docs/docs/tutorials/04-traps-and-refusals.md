@@ -20,8 +20,8 @@ covers the vocabulary itself.
 | --- | --- | --- |
 | `malformed.wasm` | the bytes `not a wasm module` | malformed |
 | `invalid.wat` | `(module (func (export "f") (result i32) i64.const 42))` | invalid: type mismatch |
-| `memory64.wat` | `(module (memory i64 1))` | gated: memory64 is off |
-| `tailcall.wat` | a function using `return_call` | gated: tail calls are off |
+| `gc.wat` | `(module (type $s (struct (field i32))))` | gated: GC is off |
+| `eh.wat` | a function using `try_table` | gated: exception handling is off |
 | `imports.wat` | imports `env.log` | unlinkable: the core path supplies no imports |
 | `shared.wat` | a shared memory, `i32.atomic.rmw.add`, `memory.atomic.wait32` | runs: the threads grammar is on |
 
@@ -53,17 +53,20 @@ Notes on each line:
 - **Malformed and invalid** carry the spec's own text, so you can match on `type mismatch` without Burroughs
   restating the spec's rules.
 - **Gated** names the proposal. The module is well-formed, and a build with that gate on would run it. **The public
-  API cannot turn memory64, tail calls, GC, exception handling, multi-memory or extended-const on.** These six are
-  off by default and no `Feature` reaches them, so through the public API this result is final in `v0.11.0`.
+  API cannot turn GC or exception handling on.** Both are off by default and no `Feature` reaches them, so through
+  the public API this result is final in `v0.12.0`. (Until `v0.12.0` this tutorial used a memory64 module and a
+  tail-call module here. Both proposals are on by default now, so those modules are admitted, and the two that
+  stay off took their place.)
 - **Unlinkable**: the core `Instantiate` path has no way to supply imports, so the module is refused when it loads,
   before anything can trap on a missing function. If your module needs host functions, the only supported host
   imports are WASI preview 1 (`WASIP1Config.Run`) and the WASI 0.2 subset for components.
 - **`Strict: true` changed nothing here.** None of these modules declines. No module in the default feature set is
   currently known to produce a decline. `Strict` only matters once the validator meets a construct it has no rule
   for yet.
-- **Shared memory runs**, because `gate:threads` is on by default. There is only ever one agent,
-  though: nothing public can start a second thread, so `memory.atomic.wait32` can only return 2 ("timed-out"), or 1
-  ("not-equal") if the value already differs.
+- **Shared memory runs**, because `gate:threads` is on by default. On this core path there is only ever one agent,
+  though: `Instantiate` supplies no imports, so nothing here starts a second thread, and `memory.atomic.wait32` can
+  only return 2 ("timed-out"), or 1 ("not-equal") if the value already differs. (A `wasip1` command can start its
+  own threads, through the `"burroughs" "spawn"` import, since `v0.12.0`.)
 
 ## Traps
 
@@ -94,6 +97,10 @@ default. The variables are read when they are used, so they work for the CLI and
 | `BURROUGHS_COMPONENTS` | `gate:components`: the component model | 2026-09-11 |
 | `BURROUGHS_ASYNC` | `gate:async`: the async component ABI | 2026-09-18 |
 | `BURROUGHS_CM_THREADS` | `gate:cm-threads`: component-model threads, phase 1 | 2026-10-17 (v0.8.0) |
+| `BURROUGHS_EXTENDED_CONST` | `gate:extended-const`: arithmetic in constant expressions | v0.12.0 (ADR 0107) |
+| `BURROUGHS_TAIL_CALL` | `gate:tail-call`: `return_call`, `return_call_indirect` | v0.12.0 (ADR 0108) |
+| `BURROUGHS_MULTI_MEMORY` | `gate:multi-memory`: more than one memory, an explicit memory index | v0.12.0 (ADR 0109) |
+| `BURROUGHS_MEMORY64` | `gate:memory64`: an `i64` index type on a memory or table | v0.12.0 (ADR 0110) |
 
 SIMD and relaxed SIMD are also on by default, but have **no** environment rollback.
 
@@ -116,10 +123,10 @@ With the gate rolled back, a `wasip1` guest that needs atomics can still ask for
 (`sharedcmd.wasm` exits with the value the atomic add returns, the old contents of address 0, which is 0.)
 
 `Config`, the core-module path, has no `Features`. With `BURROUGHS_THREADS=0`, a core module that uses threads
-cannot be admitted through `Instantiate` at all. The last command above shows the CLI's core path refusing it even
-with `--features=threads` (exit 6), because `--features` has no effect on that path
-([#1128](https://github.com/scttfrdmn/burroughs/issues/1128), on the `v0.12.0` milestone, expects such a flag to be
-refused by name instead).
+cannot be admitted through `Instantiate` at all. The last command above shows the CLI's core path refusing
+`--features` by name (exit 2), because a core module takes the default proposal set. (Since `v0.12.0`,
+[#1128](https://github.com/scttfrdmn/burroughs/issues/1128): before it the flag was silently ignored, and the module
+was refused as gated, exit 6.)
 
 ### `BURROUGHS_COMPONENTS=0` and `BURROUGHS_ASYNC=0`
 

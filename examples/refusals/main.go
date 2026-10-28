@@ -37,7 +37,9 @@ func classify(err error) string {
 }
 
 func main() {
-	for _, name := range []string{"malformed", "invalid", "memory64", "tailcall", "imports", "shared"} {
+	// gc and eh are the two proposals still gated off by default. v0.12.0 turned memory64 and tail calls on, and
+	// the modules that stood here are admitted now.
+	for _, name := range []string{"malformed", "invalid", "gc", "eh", "imports", "shared"} {
 		wasm, err := os.ReadFile(name + ".wasm")
 		if err != nil {
 			log.Fatal(err)
@@ -49,8 +51,10 @@ func main() {
 			continue
 		}
 		if name == "shared" {
-			// Admitted by default (gate:threads is on), but nothing can start a
-			// second agent over this memory, so a wait can only time out.
+			// Admitted by default (gate:threads is on). Core Instantiate supplies no
+			// imports, so nothing on this path starts a second agent over this memory,
+			// and a wait can only time out. (A wasip1 command can start one, through
+			// the "burroughs" "spawn" door, since v0.12.0.)
 			n, err := in.Call("inc")
 			fmt.Println("            inc ->", n, err)
 			r, err := in.Call("wait")

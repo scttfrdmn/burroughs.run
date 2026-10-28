@@ -33,7 +33,7 @@ $ wasm-tools parse calc.wat -o calc.wasm
 --8<-- "examples/embed-core/go.mod"
 ```
 
-It requires the published `v0.11.0` from the Go module proxy; there is no local `replace`. (CI points the `require`
+It requires the published `v0.12.0` from the Go module proxy; there is no local `replace`. (CI points the `require`
 at the latest release tag before it runs the example.)
 
 ## 3. The host

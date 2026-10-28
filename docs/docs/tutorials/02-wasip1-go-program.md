@@ -85,8 +85,9 @@ Run it with `go run .` in `examples/wasip1/host/`. It prints:
     --8<-- "examples/cli/transcripts/t2-threads0.txt"
     ```
 
-    The guests from the project's Go fork (the "Phase 4 fork") do carry atomics, and their
-  `"burroughs" "spawn"` import does not link through any public path in `v0.11.0`. See
-  [Known limits](../limits-and-status.md).
-- Only a subset of preview 1 is implemented for writes. Twenty functions still answer `ENOSYS` (ADR 0091's amendment counts 21; the `v0.11.0` host refuses 20).
+    The guests from the project's Go fork (the "Phase 4 fork") do carry atomics. Since `v0.12.0` their
+  `"burroughs" "spawn"` import is served by `WASIP1Config.Run` and `burroughs run`, so a fork-built program starts
+  real threads through this same path. One fork-side limit applies: a guest that calls `runtime.LockOSThread` and
+  then needs another M crashes the fork's runtime. See [Known limits](../limits-and-status.md).
+- Only a subset of preview 1 is implemented for writes. Twenty functions still answer `ENOSYS` (ADR 0091's amendment counts 21; the host refuses 20).
   If your guest needs one, it gets that error back. It does not crash.

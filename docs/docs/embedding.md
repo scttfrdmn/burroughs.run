@@ -4,10 +4,10 @@ wip: true
 
 # Embedding guide: the Go API
 
-*Written against `v0.11.0` from the package documentation (`go doc -all
-github.com/scttfrdmn/burroughs`) and the code behind it. Behaviour marked **observed** was checked by running programs against
-`v0.11.0`: most of it is in the example programs this site's CI runs (see the tutorials), and the rest was checked
-with one-off programs during the site's fact pass. A few doc comments in the package are out of date
+*Written against `v0.12.0` from the package documentation (`go doc -all
+github.com/scttfrdmn/burroughs`) and the code behind it. Behaviour marked **observed** was checked by running programs:
+most of it is in the example programs this site's CI runs against every release (see the tutorials), and the rest
+was checked with one-off programs during the site's fact pass at `v0.11.0`. A few doc comments in the package are out of date
 ([#1130](https://github.com/scttfrdmn/burroughs/issues/1130)). Where that matters it is noted below, and what is
 described here is what the code does. The Go declarations on this page are excerpts of the API, labelled as
 fragments; the runnable programs are in the tutorials.*
@@ -54,8 +54,8 @@ type Config struct {
 `Instantiate` decodes, validates and instantiates. When it fails, the error matches exactly one classification, in
 this order:
 
-1. **`ErrGated`**: the decoder hit a construct from a proposal whose gate is off, for example `memory64: feature
-   gate disabled`. This is checked before malformed, because a gated module is well-formed.
+1. **`ErrGated`**: the decoder hit a construct from a proposal whose gate is off, for example `gc: feature gate
+   disabled`. This is checked before malformed, because a gated module is well-formed.
 2. **`ErrMalformed`**: the bytes are not a module this decoder can read. The wrapped text is the spec's own, for
    example `magic header not detected`.
 3. **`ErrInvalid`**: the module is well-formed but breaks a typing rule. The wrapped text names the rule, for example
@@ -188,8 +188,16 @@ The capability model (decision 0083):
   `Capabilities insufficient` (observed).
 - **`Writable: true`** makes a scratch grant. It enables `path_create_directory`, `path_unlink_file`,
   `path_remove_directory`, `fd_pwrite`, and `path_open`'s create and truncate modes. Twenty other
-  preview-1 functions still answer `ENOSYS` (ADR 0091's amendment counts 21; the `v0.11.0` host refuses 20).
+  preview-1 functions still answer `ENOSYS` (ADR 0091's amendment counts 21; the host refuses 20).
 - **Env is empty unless you set it.** The host process's environment is not inherited.
+
+**A guest can start its own threads** (since `v0.12.0`). If the module imports `"burroughs" "spawn"`, with type
+`(i32) -> ()` or `(i32) -> (i32)`, and exports `mstart` of type `(i32) -> ()`, `Run` serves the import: each call
+starts a new agent running `mstart(arg)` on its own OS thread, over the module's shared memory, and the
+result-bearing form returns the new agent's thread id. A module that imports the door without a matching `mstart` is
+refused at link. Contract §2 T-1 names the door, and it is what the Phase 4 Go fork's runtime calls. A Go guest on
+that fork must not call `runtime.LockOSThread` and then need another M, which crashes the fork's runtime
+([#1157](https://github.com/scttfrdmn/burroughs/issues/1157)).
 
 Note the stream defaults: **nil streams are the process's own** here, which is the opposite of `ComponentConfig`.
 
@@ -210,8 +218,9 @@ It matters when `BURROUGHS_THREADS=0` rolls that back: it admits shared memories
 (observed). The doc comment on `FeatureThreads` still says *"`gate:threads`' default is unchanged"*. That was true
 when it was written and is not true now.
 
-**There is no `Feature` for GC, exception handling, tail calls, memory64, multi-memory or extended-const.** Modules
-using them are `ErrGated` through every public path.
+**There is no `Feature` for GC or exception handling.** Modules using them are `ErrGated` through every public path.
+Extended constant expressions, tail calls, multi-memory and memory64 need no `Feature`: they are on by default since
+`v0.12.0`, and only their environment rollbacks (`BURROUGHS_<GATE>=0`) turn them off.
 
 ---
 
@@ -246,7 +255,7 @@ At load:
 load or link failure or a trap. That is the same one-channel rule `WASIP1Config.Run` follows.
 
 The `ComponentConfig` doc comment still says the value-call surface *"has not landed"*. It has: `LoadComponent`,
-`Component.Call` and `ComponentValue` are all public in `v0.11.0`.
+`Component.Call` and `ComponentValue` are all public in `v0.12.0`.
 
 ### `Component`
 
@@ -277,7 +286,7 @@ func (c *Component) Close() error
 
 ### `ComponentValue` and `ComponentType`
 
-Four WIT kinds cross the boundary in `v0.11.0`, in both directions:
+Four WIT kinds cross the boundary in `v0.12.0`, in both directions:
 
 | WIT | Type | Construct | Read |
 | --- | --- | --- | --- |
@@ -296,14 +305,11 @@ The rules behind this table:
   refuses an empty field set, a duplicate label, or a label that is not valid WIT.
 - **Field order comes from the type**, not from the map. Pass fields to `ComponentTypeRecord` in the order the
   component's WIT declares them, because that order is the byte layout.
-- **A second check runs at the call.** A well-formed value passed to a parameter of a different type is refused.
-  Observed: this refusal comes back classified as **`ErrUnsupported`** ("unsupported instantiation form: ... the
-  types must match structurally"), not as a separate argument-type error.
-
-    !!! bug "Known issue, to be fixed in `v0.12.0` ([#1129](https://github.com/scttfrdmn/burroughs/issues/1129))"
-        A mistyped `Component.Call` argument is the caller's error, but `v0.11.0` classifies it as
-        `ErrUnsupported` (CLI exit 5, "the engine reached something it does not implement"). The message itself is
-        right: it names the parameter, the declared type and the given type. #1129 is on the `v0.12.0` milestone.
+- **A second check runs at the call.** A well-formed value passed to a parameter of a different type is refused as
+  **the caller's error**, matching no sentinel, as a mistyped `Instance.Call` argument is. The message names the
+  parameter, the declared type and the given type (observed, in [tutorial 3](tutorials/03-components.md)'s output).
+  Until `v0.12.0` it was classed `ErrUnsupported`, which wrongly blamed the engine
+  ([#1129](https://github.com/scttfrdmn/burroughs/issues/1129), fixed).
 - **`Str()` versus `String()`**: `Str()` returns a string value's *content*. `String()` is a debug rendering
   (`string("burroughs")`, `u32(42)`) and is truncated for long values.
 - **The zero `ComponentValue` and the zero `ComponentType` name no type.** They are refused wherever they are used.
@@ -327,7 +333,7 @@ Every sentinel is matched with `errors.Is`. The wrapped message carries the deta
 | `ErrDeclined` | validator has no rule yet for a construct | load, `Strict` only (`Instance.Decline` otherwise) |
 | `ErrGated` | well-formed, uses a proposal whose gate is off | load |
 | `ErrUnlinkable` | an import nothing supplies | load (core path) |
-| `ErrUnsupported` | the engine does not implement this, or an unknown `Feature`, or a component kind or form not modelled (and, in `v0.11.0`, a mistyped `Component.Call` argument: [#1129](https://github.com/scttfrdmn/burroughs/issues/1129)) | load or point of use |
+| `ErrUnsupported` | the engine does not implement this, or an unknown `Feature`, or a component kind or form not modelled | load or point of use |
 | `ErrCancelled` | a `Component.Call` whose context was cancelled, after the task ended | component call |
 | `ErrComponentClosed` | a `Component.Call` after `Close` | component call |
 | `ErrInstanceLocked` | a `Component.Call` after an earlier trap. Wraps that `*Trap`. | component call |

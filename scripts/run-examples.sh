@@ -13,7 +13,8 @@
 #                   the diff, and the docs that include those files, before
 #                   committing).
 #
-# The committed go.mod files require v0.11.0 with no local replace. This script
+# The committed go.mod files require the release the docs were written against (v0.12.0), with no local replace,
+# and move with each release's re-read (the cut procedure's step 6). This script
 # copies examples/ to scratch and points each copy's require at the tag, so the
 # committed tree is never modified (except by --update, and then only the
 # expected-output files).

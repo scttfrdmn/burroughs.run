@@ -4,8 +4,8 @@ burroughs: malformed module: magic header not detected
 $ burroughs run refusals/invalid.wasm
 burroughs: invalid module: type mismatch: instruction requires [i32] but stack has [i64] (instr 1: end) (func 0)
 [exit 3]
-$ burroughs run refusals/memory64.wasm
-burroughs: proposal gate is off in this build: memory64: feature gate disabled
+$ burroughs run refusals/gc.wasm
+burroughs: proposal gate is off in this build: gc: feature gate disabled
 [exit 6]
 $ burroughs run refusals/imports.wasm
 burroughs: module has unsupplied imports: unknown import: "env" "log" (interp: link failed)

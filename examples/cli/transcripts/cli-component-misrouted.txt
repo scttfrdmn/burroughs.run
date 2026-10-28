@@ -1,14 +1,17 @@
 $ echo "echo me" | burroughs run testdata/p3echo.wasm -- a b
-burroughs: malformed module: unknown binary version: 65549
-[exit 3]
+args=["p3echo.wasm", "a", "b"]
+stdin[8]="echo me\n"
 $ burroughs run --dir ./wasip1/data:/data testdata/p3hello.wasm
-burroughs: malformed module: unknown binary version: 65549
-[exit 3]
+burroughs: a component takes no --dir or --scratch: this build's component host grants no directories
+[exit 2]
 $ burroughs run --features=threads testdata/p3hello.wasm
-burroughs: malformed module: unknown binary version: 65549
-[exit 3]
-$ burroughs run --env GREETING=hi --scratch ./wasip1/out:/out testdata/p3hello.wasm
 Hello, world!
+$ burroughs run --env GREETING=hi testdata/p3hello.wasm
+burroughs: a component takes no --env: this build's component host serves an empty environment
+[exit 2]
+$ burroughs run --env GREETING=hi --scratch ./wasip1/out:/out testdata/p3hello.wasm
+burroughs: a component takes no --dir or --scratch: this build's component host grants no directories
+[exit 2]
 $ burroughs run --features=gc embed-core/calc.wasm add i32:1 i32:2
 burroughs: feature not implemented in this phase: unknown feature "gc"; this build recognizes "threads"
 [exit 5]

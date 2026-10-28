@@ -44,11 +44,11 @@ Run with `go run .` in `examples/component/`:
 --8<-- "examples/component/output.txt"
 ```
 
-!!! bug "Known issue, to be fixed in `v0.12.0` ([#1129](https://github.com/scttfrdmn/burroughs/issues/1129))"
-    The line `wrong argument type at the call` shows `v0.11.0` classifying a mistyped `Component.Call` argument as
-    `ErrUnsupported` ("feature not implemented in this phase … unsupported instantiation form"). It is the
-    caller's error, and #1129, on the `v0.12.0` milestone, is to reclassify it while keeping the message. When
-    that release ships, this line of the output changes, and this site's CI will flag it.
+!!! note "Fixed in `v0.12.0` ([#1129](https://github.com/scttfrdmn/burroughs/issues/1129))"
+    The line `wrong argument type at the call` shows a mistyped `Component.Call` argument refused as **the caller's
+    error**: the message names the parameter and both types, and it matches no sentinel, as a mistyped
+    `Instance.Call` argument does. In `v0.11.0` it was classed `ErrUnsupported`, wrongly blaming the engine. This
+    note said the line would change when the fix shipped and that this site's CI would flag it, and both happened.
 
 ## What to take from it
 
@@ -56,9 +56,8 @@ Run with `go run .` in `examples/component/`:
   empty `list<string>` are different values. Most mistakes are refused when you build the value, before any call.
 - **A record is built from a map, and its field order comes from the type.** Declare the fields in the order the
   component's WIT does.
-- **A type mismatch at the call is classified `ErrUnsupported`** in `v0.11.0` (known issue
-  [#1129](https://github.com/scttfrdmn/burroughs/issues/1129), to be fixed in `v0.12.0`). The message is specific,
-  but the category is the same one used for "not implemented". If you branch on it, read the text too.
+- **A type mismatch at the call is your error, not the engine's.** It matches no sentinel, so `errors.Is` against
+  `ErrUnsupported` is false, and the message says which parameter and which types.
 - **Read string contents with `Str()`.** `String()` is a debug rendering: `string("burroughs")`.
 - **A trap locks the whole component instance.** The next call returns `ErrInstanceLocked`, which wraps the same
   `*Trap`. Core modules do not do this. To recover, load a new `Component`.
@@ -79,5 +78,6 @@ Run with `go run .` in `examples/component/`:
 - **Component-model threads** (`gate:cm-threads`, phase 1 of the shared-everything-threads proposal) start
   through these paths, cooperatively, one at a time per instance. The proposal's `thread.spawn-ref` is refused by
   name, and `thread.spawn-indirect` is refused at decode.
-- **The CLI cannot pass arguments to a component** (known issue
-  [#1128](https://github.com/scttfrdmn/burroughs/issues/1128), to be fixed in `v0.12.0`): see the [CLI reference](../cli.md#what-does-not-work-for-components-through-the-cli-v0110).
+- **From the CLI, a component takes its arguments after `--`**, and refuses `--dir`, `--scratch`, `--env` and a
+  function name by name (since `v0.12.0`, [#1128](https://github.com/scttfrdmn/burroughs/issues/1128)): see the
+  [CLI reference](../cli.md#components-through-the-cli).

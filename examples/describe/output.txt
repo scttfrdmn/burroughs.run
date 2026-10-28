@@ -2,5 +2,5 @@ instantiate boom: ok
 call boom:        trap: unreachable
 call nope:        other: interp: no exported function "nope"
 malformed bytes:  refused
-memory64 module:  gated
+GC module:        gated
 Feature "gc":     unsupported

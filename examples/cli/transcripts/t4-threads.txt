@@ -4,5 +4,5 @@ burroughs: proposal gate is off in this build: threads: feature gate disabled
 [exit 6]
 $ BURROUGHS_THREADS=0 burroughs run --features=threads sharedcmd.wasm
 $ BURROUGHS_THREADS=0 burroughs run --features=threads shared.wasm wait
-burroughs: proposal gate is off in this build: threads: feature gate disabled
-[exit 6]
+burroughs: --features applies to a wasip1 command or a component; a core module takes the default proposal set
+[exit 2]
