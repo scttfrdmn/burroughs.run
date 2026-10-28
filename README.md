@@ -48,7 +48,7 @@ disagree, the engine wins; every page is marked work in progress.
 ## Local preview
 
 ```sh
-uv venv --python 3.13.18 .venv
+uv venv --python 3.13.15 .venv
 VIRTUAL_ENV=$PWD/.venv uv pip install --require-hashes -r requirements.txt
 .venv/bin/python -I scripts/release_snippet.py
 .venv/bin/python -I scripts/check_code_blocks.py
