@@ -2,7 +2,7 @@
 date: 2026-10-26
 slug: a-battery-that-grades-itself
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 6. A battery that grades itself

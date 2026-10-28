@@ -2,7 +2,7 @@
 date: 2026-10-26
 slug: whats-next
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 10. What's next

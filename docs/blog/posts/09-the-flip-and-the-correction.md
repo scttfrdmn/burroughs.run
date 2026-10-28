@@ -2,7 +2,7 @@
 date: 2026-10-26
 slug: the-flip-and-the-correction
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 9. The flip and the correction

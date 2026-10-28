@@ -2,7 +2,7 @@
 date: 2026-10-26
 slug: three-hangs-and-a-witness-that-lied
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 8. Three hangs and a witness that lied

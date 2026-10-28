@@ -2,7 +2,7 @@
 date: 2026-08-28
 slug: graves-stamps-and-laws
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 3. Graves, stamps and laws

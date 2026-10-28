@@ -2,7 +2,7 @@
 date: 2026-10-21
 slug: components-async-and-two-oracles
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 7. Components, async and two oracles

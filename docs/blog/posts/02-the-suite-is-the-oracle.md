@@ -2,7 +2,7 @@
 date: 2026-08-28
 slug: the-suite-is-the-oracle
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 2. The suite is the oracle

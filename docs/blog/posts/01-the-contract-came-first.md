@@ -2,7 +2,7 @@
 date: 2026-07-30
 slug: the-contract-came-first
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 1. The contract came first

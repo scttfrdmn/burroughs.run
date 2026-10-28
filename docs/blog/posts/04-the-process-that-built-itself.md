@@ -2,7 +2,7 @@
 date: 2026-09-05
 slug: the-process-that-built-itself
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 4. The process that built itself, and the pruning

@@ -2,7 +2,7 @@
 date: 2026-09-07
 slug: threads-without-a-bell
 categories: [Building Burroughs]
-wip: true
+written: 2026-10-26
 ---
 
 # 5. Threads without a bell
