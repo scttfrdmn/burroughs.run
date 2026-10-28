@@ -59,6 +59,19 @@ scripts/run-examples.sh           # needs Go 1.27.3 and network access to the mo
 To move the toolchain, edit `requirements.in` and regenerate the lock with
 `uv pip compile --python-version 3.13 --generate-hashes requirements.in -o requirements.txt`.
 
+## Artwork
+
+The source is Scott's wordmark, `docs/assets/BurroughsWordmark.png` (1254×1254, navy and teal on white). The other
+images are made from it with Pillow:
+
+| Asset | Made from the source (crop: left, top, right, bottom) | Used for |
+|---|---|---|
+| `wordmark.png` | crop 52, 225, 1202, 966: the mark and the name, with the empty margins trimmed | the landing page's heading |
+| `logo.png` | crop 440, 250, 860, 773 (the B mark, ending above the name's first row), padded square on white, 256×256 | the header logo |
+| `favicon.png` | the same square, 64×64 | the favicon |
+
+On the dark scheme, the wordmark sits on a white tile (`extra.css`), since its background is white.
+
 ## License
 
 Apache 2.0 (`LICENSE`), © 2026 Scott Friedman (`NOTICE`).

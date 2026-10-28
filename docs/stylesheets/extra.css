@@ -39,6 +39,15 @@
   color: var(--md-default-fg-color--light);
 }
 .bx-hero .bx-tagline { font-size: 1.15rem; line-height: 1.7; }
+/* The wordmark is navy and teal on white, so it heads the page as drawn on the light scheme, and sits on its
+ * own white tile on the dark one rather than vanishing into it. */
+.md-typeset .bx-hero .bx-wordmark { margin: 0 0 0.5rem; line-height: 0; }
+.bx-hero .bx-wordmark img { width: min(22rem, 70%); height: auto; }
+[data-md-color-scheme="slate"] .bx-hero .bx-wordmark img {
+  background: #fff;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.75rem;
+}
 
 /* Code that is NOT run by this site's CI is labelled as a fragment. */
 .md-typeset .fragment > pre::before,

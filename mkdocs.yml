@@ -12,6 +12,9 @@ copyright: >
 theme:
   name: material
   custom_dir: overrides
+  # The B mark from Scott's wordmark, on a white square (README.md's "Artwork" section says how each was made).
+  logo: assets/logo.png
+  favicon: assets/favicon.png
   font:
     text: Atkinson Hyperlegible
     code: Atkinson Hyperlegible Mono

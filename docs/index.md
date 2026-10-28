@@ -6,14 +6,14 @@ hide:
   - toc
 ---
 
-# Burroughs
-
 <div class="bx-hero" markdown>
+
+<h1 class="bx-wordmark"><img src="assets/wordmark.png" alt="Burroughs" width="1150" height="741"></h1>
 
 <p class="bx-pipeline">Go &rarr; Wasm &rarr; Burroughs</p>
 
 <p class="bx-tagline"><strong>A WebAssembly runtime written in pure Go, designed around one guest language: Go.</strong>
-The B5000 favored ALGOL. Burroughs favors Go.</p>
+Correctness-neutral, performance-partisan. The B5000 favored ALGOL. Burroughs favors Go.</p>
 
 [Read the docs](docs/index.md){ .md-button .md-button--primary }
 [Read the blog](blog/index.md){ .md-button }
