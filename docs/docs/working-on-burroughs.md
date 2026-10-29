@@ -43,7 +43,7 @@ issues labelled `type:grave` are the graveyard: bugs found, each with the lesson
 The upstream WebAssembly spec test suite is the oracle. The project quotes no figure from it in prose, because a
 count typed into a document rots. Ask the instrument instead:
 
-```console
+``` { .console .fragment }
 $ make spec-tests                                    # vendor the suite (gitignored)
 $ go test ./internal/spec/ -run TestPhase1Files -v   # print the board
 $ make conformance                                   # assert it, both lanes
