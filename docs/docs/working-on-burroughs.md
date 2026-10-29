@@ -40,6 +40,9 @@ issues labelled `type:grave` are the graveyard: bugs found, each with the lesson
   witnesses, the citation, closing-keyword and spacing sweeps, and the vulnerability scan.
 - **`make check`** is the fast inner loop: format check, build, vet, lint, the tests (default and end-table builds)
   and dead-code. On success it prints the gates it did **not** run, so its green cannot be mistaken for `ci`'s.
+- **The toolchain is pinned exactly**, by `go.mod`'s `toolchain` line. The Makefile exports `GOTOOLCHAIN` from it,
+  and `make toolchain-check` fails if the version that actually ran is a different one, so a green gate means green
+  on the pinned toolchain.
 - A test named on the Windows lane's [triage map](https://github.com/scttfrdmn/burroughs/blob/main/.github/windows-triage.tsv)
   is a known portability gap with an open issue. Windows is measured and not supported, and a failure the map does
   not name is new, so it is classified and filed before the next merge.
