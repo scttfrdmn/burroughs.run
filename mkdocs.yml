@@ -67,6 +67,7 @@ nav:
       - Concepts: docs/concepts.md
       - Known limits and status: docs/limits-and-status.md
       - Roadmap: docs/roadmap.md
+      - Working on Burroughs: docs/working-on-burroughs.md
   - Blog:
       - blog/index.md
 
