@@ -24,6 +24,12 @@ is normative.*
 - **[`CHANGELOG.md`](https://github.com/scttfrdmn/burroughs/blob/main/CHANGELOG.md)** says what landed, newest first.
   Gate flips are **Added** and graves are **Fixed**, each beside its issue.
 
+**The README's examples are executed.** `TestREADMETranscriptIsExecutable` runs every `burroughs` line in the README's
+transcript through the CLI's own dispatcher and compares the output and the exit code. `TestREADMEGoBlocksAreRealCode`
+requires every Go block there to appear in compiled code. `examples/add/add.wasm` is committed so a fresh clone needs
+one command, and it is derived: `go run ./examples/add/gen.go` re-assembles it from `add.wat` with the engine's own
+assembler, and `TestExampleWasmIsDerivedFromItsWat` holds the two equal.
+
 **Project state lives in GitHub, not in files.** Milestones are the phase ladder, issues are the units of work, and
 issues labelled `type:grave` are the graveyard: bugs found, each with the lesson in its closing comment.
 
