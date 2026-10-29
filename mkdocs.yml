@@ -66,6 +66,7 @@ nav:
           - Traps, refusals and gates: docs/tutorials/04-traps-and-refusals.md
       - Concepts: docs/concepts.md
       - Known limits and status: docs/limits-and-status.md
+      - The v0.12.0 threads witness: docs/threads-witness.md
       - Roadmap: docs/roadmap.md
       - Working on Burroughs: docs/working-on-burroughs.md
   - Blog:

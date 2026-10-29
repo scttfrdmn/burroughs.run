@@ -21,6 +21,10 @@ Correctness-neutral, performance-partisan. The B5000 favored ALGOL. Burroughs fa
 
 </div>
 
+**In v0.12.0, a fork-built Go program runs through `burroughs run` with `GOMAXPROCS > 1`, several agents executing
+guest code at once on OS threads, and garbage collection across them.**
+[How that is witnessed, and what the witness does not show.](docs/threads-witness.md)
+
 ## What it is
 
 - **Pure Go.** No cgo, and no dependency outside the Go standard library. The module is
