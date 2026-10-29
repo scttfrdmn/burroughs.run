@@ -57,6 +57,7 @@ nav:
   - Docs:
       - docs/index.md
       - Getting started: docs/getting-started.md
+      - Why Burroughs?: docs/why-burroughs.md
       - CLI reference: docs/cli.md
       - Embedding guide: docs/embedding.md
       - Tutorials:
