@@ -70,8 +70,8 @@ The [known limits page](docs/limits-and-status.md) has the details, with issue n
 
 - **[Docs](docs/index.md)**: install, the CLI, the Go API, four tutorials, concepts, limits and the roadmap. Every
   example program on those pages is run by this site's CI against the latest Burroughs release.
-- **[Blog](blog/index.md)**: *Building Burroughs*, a ten-part story of how the engine and its unusual process were
-  built, from an empty repository to `v0.11.0`.
+- **[Blog](blog/index.md)**: *Building Burroughs*, an eleven-part story of how the engine and its unusual process were
+  built, from an empty repository to `v0.12.0`.
 - **[GitHub](https://github.com/scttfrdmn/burroughs)**: the code, the `CHANGELOG.md`, the decision records, and the
   issue tracker, where the project's status lives.
 

@@ -2,30 +2,20 @@
 date: 2026-10-26
 slug: whats-next
 categories: [Building Burroughs]
-written: 2026-10-26
+written: 2026-10-29
 ---
 
 # 10. What's next
 
-*Drafted 2026-10-26 from the repository's records. Issue states are as read on that day and will move. Corrections welcome.*
+*Drafted 2026-10-26 from the repository's records, and revised 2026-10-29 after `v0.12.0` shipped: its section is cut down to a pointer to post 11, and the sentences `v0.12.0` overtook are changed. Issue states are as read on the day each says and will move. Corrections welcome.*
 
-## v0.12.0: a Go program in all its glory
+## v0.12.0, shipped
 
-The next milestone, `v0.12.0 guest-started threads`, is built around #1122, which carries Scott's goal statement in its body:
+When this post was drafted, the next milestone was `v0.12.0 guest-started threads`, built around #1122 and Scott's goal that *"Go->Wasm->Burroughs runs a Go program in all its glory on an engine that can."* It shipped on 2026-10-28, and post 11 covers what it delivered and what it did not.
 
 <!-- more -->
 
-> Guest started seems to be the intent of the project - Go->Wasm->Burroughs runs a Go program in all its glory on an engine that can.
-
-Concretely: a Go program built by the Phase 4 fork runs **with real threads through the public paths** (`burroughs run`, `WASIP1Config.Run`, and the component path's `thread.spawn*` where it applies), with nothing supplied beyond the module. The target behaviour is `GOMAXPROCS > 1`, goroutines spread over several agents, and the GC working across them.
-
-The issue also sets the order of work: *"The plan is posted here before any build, and goes to the chair."* The plan has to say what each public path refuses today, the change per path, whether the guest-side spawn import is already contract text (citing the clause, or drafting it for Scott), an end-to-end witness (a fork-built Go program with N goroutines doing real parallel work and a GC across agents, checked against an expected result through `burroughs run`), a neuter per path, and the size.
-
-This is where the thesis is tested for real. Every earlier post describes promises made *for* Go. v0.12.0 is meant to be where a Go runtime with many Ms runs on them through a door an ordinary user can open.
-
-As read on 2026-10-27 (UTC), the milestone holds six open issues: #1122; #1128 and #1129, two component-path defects (the CLI's handling of `run <component>` flags, and a mistyped `Component.Call` argument's error class); #1132 and #1133, two T-5 gaps; and #406, the Go-runtime torture set.
-
-One question is explicitly *not* being reopened. SP-1's "reading (b)", stopping a Go guest without relying on its compiler-inserted loop checks, stays parked (#1064). The issue states that *"the engine's existing loop-check preemption covers the Go guest."*
+Of the six open issues the milestone held as read on 2026-10-27 (UTC), #1122, #1128 and #1129 closed with the release. As read on 2026-10-29, #1132, #1133 and #406 are on the `v0.13.0 (proposed)` milestone.
 
 ## The rest of the ladder
 
@@ -54,7 +44,7 @@ The same roadmap reading lists contract promises nobody has built. Each is track
 | §2 T-5.2 | A *host-side* join an embedder can call | exists only on the internal `interp.Instance` (#657) |
 | §5 H-3 | A guest-visible cancel for blocked host calls | open (#13, v1 milestone); Scott's recorded lean is *"v1 minimal — shutdown-interruptibility is the MUST"* |
 
-Six core proposals also remain **default-off**: exception handling, memory64, GC, tail calls, multi-memory and extended constants. Together they account for the board's 4187 gated vectors. Their per-gate forecasts were just posted for Scott's stamp (post 9). The contract's M-4 says GC is implemented *"for conformance … and deliberately unoptimized. Go brings its own collector."*
+Two core proposals remain **default-off**: exception handling and GC. Six were off when this post was drafted. The other four (extended constants, tail calls, multi-memory and memory64) were flipped on in `v0.12.0` from the per-gate forecasts of post 9, which took the board from 4187 gated vectors to 1368 (post 11). The contract's M-4 says GC is implemented *"for conformance … and deliberately unoptimized. Go brings its own collector."*
 
 ## The distance to v1.0.0
 
@@ -62,16 +52,15 @@ Six core proposals also remain **default-off**: exception handling, memory64, GC
 
 1. **Every registered §4 litmus case landed or deferred with a live expiry.** Met at `v0.11.0`: 19 of 19, with no deferral left.
 2. **The battery run on both a TSO and a weakly-ordered platform.** CI gates on linux x86-64, linux arm64 and darwin arm64.
-3. **The memory-model reach stated at its measured strength** wherever the version's coverage is claimed. The `v0.10.0`/`v0.11.0` claim texts are written that way. Whether a claim about *public* threads can be stated at all depends on v0.12.0.
+3. **The memory-model reach stated at its measured strength** wherever the version's coverage is claimed. The `v0.10.0`/`v0.11.0` claim texts are written that way. Until `v0.12.0`, no public path started a second thread, so there was no public-threads claim to state. `v0.12.0` opened the WASIP1 path (post 11).
 4. **The contract stable** (§1 non-goal 4). It is still v0.1, with amendments that each name what forced them.
 
-A recon filed on 2026-10-26, #1126, examines *"a hardware weak-memory reading for the §4 battery"* and *"what it could establish,"* and raises a wasmtime core-threads option that the earlier #742 recon *"did not weigh."* It is explicit that this would not restore what #795 gave up: the wasmtime option could corroborate the battery's registrations for the guest→guest cases, not certify Burroughs, and *"Nothing here reopens #795."*
+A recon filed on 2026-10-26, #1126, examines *"a hardware weak-memory reading for the §4 battery"* and *"what it could establish,"* and raises a wasmtime core-threads option that the earlier #742 recon *"did not weigh."* It is explicit that this would not restore what #795 gave up: the wasmtime option could corroborate the battery's registrations for the guest→guest cases, not certify Burroughs, and *"Nothing here reopens #795."* The reading itself landed in `v0.12.0` as `scripts/hwlitmus.sh`, and of the three machines it ran on, only Apple arm64 discriminates (post 11).
 ## Open questions
 
 Several things are unresolved, and the tracker says so:
 
 - **Whether to report wasmtime's bug upstream** (#1045) is Scott's call, and the fixture is ready.
-- **ADR 0102**, the pin-versus-toolchain rule, is still `proposed`, waiting on a stamp.
 - **Windows** is compiled, run as a measurement, and outside every claim. Scott's 2026-10-10 ruling made it unsupported.
 - **A Go runtime fatal seen once on CI's arm64 runner** (#1089) has not repeated, and is carried as a known limit rather than treated as resolved.
 

@@ -8,13 +8,13 @@ hide:
 
 # Building Burroughs: a development story
 
-*This series was drafted on 2026-10-26 from the repository's own records: the git history, `CHANGELOG.md`, the decision docs, the law corpus, and the GitHub issues. Figures are quoted from those sources. Where a source was not checked, the text says so or leaves the claim out.*
+*This series was drafted on 2026-10-26, and extended to `v0.12.0` on 2026-10-29, from the repository's own records: the git history, `CHANGELOG.md`, the decision docs, the law corpus, and the GitHub issues. Figures are quoted from those sources. Where a source was not checked, the text says so or leaves the claim out.*
 
 > The B5000 favored ALGOL. Burroughs favors Go.
 
 **Burroughs** ([burroughs.run](https://burroughs.run)) is a WebAssembly runtime written in pure Go, with no cgo and no dependencies outside the standard library. Its design is built around one guest language, Go. It runs any spec-conforming module correctly, and where a design tradeoff exists, Go wins. The name comes from the Burroughs Large Systems (the B5000, 1961), which were stack machines designed so that one high-level language would run best on them. Wasm is a stack machine too.
 
-These posts cover how it was built, from an empty repository on 2026-07-30 to `v0.11.0` on 2026-10-26: the engine, and also the unusual process wrapped around it. Three actors appear throughout:
+These posts cover how it was built, from an empty repository on 2026-07-30 to `v0.12.0` on 2026-10-28: the engine, and also the unusual process wrapped around it. Three actors appear throughout:
 
 - **Scott** (Scott Friedman), the owner, who makes the decisions.
 - **chat-Claude**, who wrote the host contract and reviews the architecture, reached through Scott. When it issues rulings it is often called "the chair".
@@ -33,11 +33,12 @@ These posts cover how it was built, from an empty repository on 2026-07-30 to `v
 | 7 | [Components, async and two oracles](posts/07-components-async-and-two-oracles.md) | The first real Go program, WASI 0.3, the component model, and a wasmtime bug |
 | 8 | [Three hangs and a witness that lied](posts/08-three-hangs-and-a-witness-that-lied.md) | #1106's lost wakeup, #896's contention-versus-ARM experiment, grave #1118 |
 | 9 | [The flip and the correction](posts/09-the-flip-and-the-correction.md) | `gate:threads` goes on in v0.10.0, and v0.11.0 says what that did not mean |
-| 10 | [What's next](posts/10-whats-next.md) | v0.12.0's guest-started threads, the later rungs, and the distance to v1.0.0 |
+| 10 | [What's next](posts/10-whats-next.md) | The later rungs, the contract clauses not yet built, and the distance to v1.0.0 |
+| 11 | [Guest-started threads](posts/11-guest-started-threads.md) | `v0.12.0`: a fork-built Go program runs with real threads through `burroughs run`, and four Wasm 3.0 flips |
 
 ## The timeline at a glance
 
-Dates are the dated blocks in `CHANGELOG.md`. Two git tags carry a date one day earlier than their block: `v0.7.0` (tagged 2026-10-08) and `v0.8.0` (tagged 2026-10-17).
+Dates are the dated blocks in `CHANGELOG.md`. Three git tags carry a date one day earlier than their block: `v0.7.0` (tagged 2026-10-08), `v0.8.0` (tagged 2026-10-17) and `v0.12.0` (tagged 2026-10-27).
 
 | Release | Date | Headline |
 |---|---|---|
@@ -51,16 +52,17 @@ Dates are the dated blocks in `CHANGELOG.md`. Two git tags carry a date one day 
 | `v0.9.0` | 2026-10-21 | A trap locks a component instance; `Stop` reaches threads inside long instructions |
 | `v0.10.0` | 2026-10-25 | `gate:threads` flips on: core Wasm threads are admitted by default |
 | `v0.11.0` | 2026-10-26 | The litmus battery reaches 19 of 19, and the v0.10.0 threads claim is corrected |
+| `v0.12.0` | 2026-10-28 | A WASI preview-1 guest starts its own threads through the public paths; four Wasm 3.0 proposals are on by default |
 
 There is no `v0.1.0` or `v0.2.0`. Post 2 explains why.
 
-## Some numbers, as of 2026-10-26
+## Some numbers, as of 2026-10-29
 
-These are counted from the tree and the tracker on the day of writing, not taken from a status file (the project keeps none).
+These are counted from the `v0.12.0` tag and from the tracker on the day of writing, not taken from a status file (the project keeps none).
 
-- 582 commits reachable from the `v0.11.0` tag (`git rev-list --count v0.11.0`), most of them squash-merged PRs.
-- 106 decision records in `docs/decisions/` at `v0.11.0`.
-- 11 law families in `docs/laws/` at `v0.11.0`, about 5,600 lines.
+- 595 commits reachable from the `v0.12.0` tag (`git rev-list --count v0.12.0`), most of them squash-merged PRs.
+- 110 decision records in `docs/decisions/` at `v0.12.0`.
+- 11 law families in `docs/laws/` at `v0.12.0`, about 5,600 lines.
 - 168 issues labelled `type:grave`, plus 4 PRs carrying the same label.
-- A `CHANGELOG.md` of about 19,500 lines at `v0.11.0`.
-- The core spec board at `v0.11.0`: **60957 pass, 0 fail, 0 unsupported, 4187 gated, 0 unimplemented** over 256 files.
+- A `CHANGELOG.md` of about 19,700 lines at `v0.12.0`.
+- The core spec board at `v0.12.0`: **63769 pass, 0 fail, 0 unsupported, 1368 gated, 0 unimplemented** over 256 files.
