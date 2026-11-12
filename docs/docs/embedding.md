@@ -4,12 +4,11 @@ wip: true
 
 # Embedding guide: the Go API
 
-*Written against `v0.12.0` from the package documentation (`go doc -all
+*Written against `v0.13.0` from the package documentation (`go doc -all
 github.com/scttfrdmn/burroughs`) and the code behind it. Behaviour marked **observed** was checked by running programs:
 most of it is in the example programs this site's CI runs against every release (see the tutorials), and the rest
-was checked with one-off programs during the site's fact pass at `v0.11.0`. A few doc comments in the package are out of date
-([#1130](https://github.com/scttfrdmn/burroughs/issues/1130)). Where that matters it is noted below, and what is
-described here is what the code does. The Go declarations on this page are excerpts of the API, labelled as
+was checked with one-off programs during the site's fact pass at `v0.11.0`. Where a doc comment and the code
+disagree, what is described here is what the code does. The Go declarations on this page are excerpts of the API, labelled as
 fragments; the runnable programs are in the tutorials.*
 
 ``` { .go .fragment }
@@ -215,8 +214,7 @@ not flip any gate's default.
 
 `FeatureThreads` is redundant while `gate:threads` is on by default, which it has been since ADR 0106 (released in `v0.10.0`; the claim covers linux and darwin).
 It matters when `BURROUGHS_THREADS=0` rolls that back: it admits shared memories and atomics again for that guest
-(observed). The doc comment on `FeatureThreads` still says *"`gate:threads`' default is unchanged"*. That was true
-when it was written and is not true now.
+(observed). `FeatureThreads`' doc comment says the same since `v0.13.0`.
 
 **There is no `Feature` for GC or exception handling.** Modules using them are `ErrGated` through every public path.
 Extended constant expressions, tail calls, multi-memory and memory64 need no `Feature`: they are on by default since
@@ -249,14 +247,15 @@ variables and no filesystem through this type.
 At load:
 
 - a component using a gated proposal (or any component, with `BURROUGHS_COMPONENTS=0`) returns `ErrGated`;
-- a form the engine does not model returns `ErrUnsupported`.
+- a form the engine does not model returns `ErrUnsupported`;
+- **since `v0.13.0`**, a core module the spec rejects returns `ErrInvalid`, with the validator's message and the
+  core module's index. Before, it was decoded and run
+  ([#1162](https://github.com/scttfrdmn/burroughs/issues/1162)).
+- **since `v0.13.0`**, a canon lower whose `realloc` is not `(i32 i32 i32 i32) -> i32` returns `ErrInvalid`, at
+  instantiation and before anything runs.
 
 `ComponentConfig.Run` calls the `wasi:cli/run` export and returns `(code, nil)` for a guest exit, or `(0, err)` for a
 load or link failure or a trap. That is the same one-channel rule `WASIP1Config.Run` follows.
-
-The `ComponentConfig` doc comment still says the value-call surface *"has not landed"*. It has: `LoadComponent`,
-`Component.Call` and `ComponentValue` are all public in `v0.12.0`.
-
 ### `Component`
 
 ``` { .go .fragment }
@@ -286,7 +285,7 @@ func (c *Component) Close() error
 
 ### `ComponentValue` and `ComponentType`
 
-Four WIT kinds cross the boundary in `v0.12.0`, in both directions:
+Four WIT kinds cross the boundary, in both directions, as they have since `v0.7.0`:
 
 | WIT | Type | Construct | Read |
 | --- | --- | --- | --- |
@@ -315,8 +314,7 @@ The rules behind this table:
 - **The zero `ComponentValue` and the zero `ComponentType` name no type.** They are refused wherever they are used.
 - **Every other kind is refused by name, as `ErrUnsupported`**: `bool`, the other integer widths, floats, `char`,
   `variant`, `enum`, `option`, `result`, `flags`, and `own`/`borrow` resource handles. The `ComponentKind` enum lists
-  them so that a refusal can name what it refused. (`ComponentKind`'s and `ComponentU32`'s doc comments still say
-  only `u32` crosses. That is out of date.)
+  them so that a refusal can name what it refused.
 - There is no accessor for a returned value's type beyond `Kind()`. You are expected to know the signature you
   called (ADR 0097).
 

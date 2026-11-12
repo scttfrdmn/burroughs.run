@@ -45,7 +45,7 @@ language would run best on them. Wasm is a stack machine too.
 
 ## What works today, in plain terms
 
-As of `v0.12.0` (the release quoted below, when this page was written):
+As of `v0.13.0` (the release quoted below, when this page was last re-read):
 
 - **Core WebAssembly** (the MVP and Wasm 2.0 features, plus SIMD, relaxed SIMD, and four Wasm 3.0 proposals:
   extended constant expressions, tail calls, multi-memory and memory64) runs, from Go (`burroughs.Instantiate`) or
@@ -57,7 +57,8 @@ As of `v0.12.0` (the release quoted below, when this page was written):
   Phase 4 Go fork uses, so a fork-built Go program runs with real threads. Core `Instantiate` supplies no imports,
   so it still starts no second thread, and host-started threads are not built.
 - **Components** load, and their typed exports can be called from Go with `u32`, `string`, `list` and `record`
-  values. The async component ABI, cancellation through `context`, and `wasi:cli/run` worlds work.
+  values. The async component ABI, cancellation through `context`, and `wasi:cli/run` worlds work. Since
+  `v0.13.0`, a component whose core module the spec rejects is refused at load, not run.
 - **Not yet:** stack switching, a full WASI 0.3 host, and two proposals that stay gated off (GC and exception
   handling). Linux and macOS (64-bit) are built and tested; Windows runs the tests in a separate CI workflow as a
   measurement, not a gate, and is unsupported.

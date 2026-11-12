@@ -4,7 +4,7 @@ wip: true
 
 # Concepts
 
-*Written against `v0.12.0`. The contract summaries below are simplifications. The normative text is
+*Written against `v0.13.0`. The contract summaries below are simplifications. The normative text is
 `docs/burroughs-contract-v0.1.md` in the repository, and wherever this page and that file differ, the file is
 right.*
 
@@ -23,7 +23,7 @@ non-Go guests beyond conformance, and, for now, production hardening and sandbox
 modules. **Burroughs describes itself as a research engine first.** Keep that last non-goal in mind before running
 untrusted code.
 
-| § | Subject | What it promises (simplified) | State at v0.12.0 |
+| § | Subject | What it promises (simplified) | State at v0.13.0 |
 | --- | --- | --- | --- |
 | §2 | Threads | Real OS threads for wasm threads (`spawn`). No main-thread special case, so any thread may block. Futex-backed `wait`/`notify`. A cheap per-thread slot (the Go `g` register analog). Defined exit, join and detach. | Built in the engine. **A `wasip1` guest reaches it** through the `"burroughs" "spawn"` import, which T-1 now names. There is no host-side spawn in the Go API. |
 | §3 | Safepoints | Preemption is the engine's job. `stop(deadline)` brings every guest thread to a safepoint in bounded time, without the guest instrumenting its own code. A thread blocked in a host call or a `wait` counts as stopped. | Built in the engine, **not public**. A Go guest's stop-the-world still depends on the fork compiler's loop checks (#1064). |
@@ -31,12 +31,12 @@ untrusted code.
 | §5 | Blocking host calls | A blocking host call blocks only its own thread. Host calls never re-enter the guest on the caller's stack. | Engine-internal. The public API has no host-function registration. |
 | §6 | Event loop (WASI 0.3) | Readiness is pulled by the guest's scheduler in batches (`poll_ready`), never pushed into guest code by callback. | Async component ABI on by default. The full WASI 0.3 host is the v3 rung. |
 | §7 | Stacks | Stack switching with growable continuation stacks (a `morestack` analog), walkable by a guest GC. | **Not started** (v2). |
-| §8 | Memory | `memory.grow` is cheap (reserve address space, commit on grow). A decommit hook. memory64 and multi-memory. WasmGC for conformance only. | Address-space reservation is in the code (ADR 0076, accepted 2026-10-28). memory64 and multi-memory are on by default since `v0.12.0`; GC is gated off. |
+| §8 | Memory | `memory.grow` is cheap (reserve address space, commit on grow). A decommit hook. memory64 and multi-memory. WasmGC for conformance only. | Address-space reservation is in the code (ADR 0076, accepted 2026-10-28). Since `v0.13.0`, on darwin and 64-bit linux, reservations are mapped at or above 16 TiB, clear of the band the Go race runtime needs for its heap (ADR 0113). memory64 and multi-memory are on by default since `v0.12.0`; GC is gated off. |
 | §9 | Gates and conformance | Every proposal sits behind a gate. A gate defaults on only after its own spec suite is green on both a TSO (x86-64) and a weakly-ordered (arm64) platform. | See below. |
 | §10 | Open questions | Settled by decision records, never silently in code. | Several still open. |
 
 The contract versions **independently** of the engine. Every release states which contract it implements, and
-`v0.12.0` implements contract v0.1.
+`v0.13.0` implements contract v0.1.
 
 ## Gates
 
@@ -49,7 +49,7 @@ A **gate** is a switch around one proposal. Two rules govern gates (contract §9
 There are two kinds of gate: **decoder feature gates**, which decide which binary constructs are admitted (from
 `internal/binary.DefaultFeatures`), and **config gates** for the component tiers.
 
-| Gate | Kind | Default in v0.12.0 | Rollback / enable |
+| Gate | Kind | Default in v0.13.0 | Rollback / enable |
 | --- | --- | --- | --- |
 | SIMD (`0xfd`, `v128`) | feature | **on** | none |
 | relaxed SIMD | feature | **on** | none |

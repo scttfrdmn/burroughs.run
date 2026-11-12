@@ -4,7 +4,8 @@ wip: true
 
 # The v0.12.0 threads witness
 
-*Written against `v0.12.0`. Every figure here comes from the witness test,
+*Written against `v0.13.0`, about the witness that shipped in `v0.12.0`. The witness test and its guest are
+unchanged between the two tags. Every figure here comes from the witness test,
 [`internal/wasi/threads012_test.go`](https://github.com/scttfrdmn/burroughs/blob/v0.12.0/internal/wasi/threads012_test.go),
 from its guest's [`PROVENANCE`](https://github.com/scttfrdmn/burroughs/blob/v0.12.0/internal/wasi/testdata/threads012/PROVENANCE),
 or from the `v0.12.0` block of the [changelog](https://github.com/scttfrdmn/burroughs/blob/v0.12.0/CHANGELOG.md).*
@@ -75,10 +76,10 @@ for its own work.
   Burroughs' spawn import (`GOEXPERIMENT=burroughsspawn`). Stock Go's `wasip1` port is single-threaded. The fork is
   part of the experimental apparatus, with Burroughs and the [Go-runtime torture suite](https://github.com/scttfrdmn/burroughs/issues/406),
   and it is not published.
-- **A guest that calls `runtime.LockOSThread` and then needs another thread crashes** on the fork, with *on a
-  locked thread with no template thread*
-  ([#1157](https://github.com/scttfrdmn/burroughs/issues/1157)). The witness doesn't pin its workers, for that
-  reason.
+- **The witness doesn't pin its workers.** At `v0.12.0`, a guest that called `runtime.LockOSThread` and then needed
+  another thread crashed on the fork, with *on a locked thread with no template thread*
+  ([#1157](https://github.com/scttfrdmn/burroughs/issues/1157)). The fork's fix has since merged, and in `v0.13.0`
+  the torture suite's `c4lock` is its witness. This witness was not rebuilt to pin, so it still doesn't.
 - **`burroughs run` itself is not under test here.** The test calls the function `burroughs run` calls. Running the
   committed guest through the `v0.12.0` CLI by hand prints the same three lines and exits 0. That is an observation,
   not a test, and it samples no concurrency.

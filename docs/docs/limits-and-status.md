@@ -4,9 +4,9 @@ wip: true
 
 # Known limits and status
 
-*This list is as of `v0.12.0` (2026-10-28). It is drawn from that release's **Known limits** in
+*This list is as of `v0.13.0` (2026-11-11). It is drawn from that release's **Known limits** in
 `CHANGELOG.md`, from the repository README, and from behaviour observed while writing these docs; observed items are
-marked. The issue states were read from GitHub on 2026-10-28. For anything later, check the newest release block in
+marked. The issue states were read from GitHub on 2026-11-11. For anything later, check the newest release block in
 `CHANGELOG.md`.*
 
 ## Phase
@@ -19,7 +19,7 @@ version number says which conformance milestone was reached.
 
 - **Core WebAssembly**, MVP and Wasm 2.0, plus SIMD, relaxed SIMD, and since `v0.12.0` extended constant
   expressions, tail calls, multi-memory and memory64, through `Instantiate` / `Instance.Call` and `burroughs run`. The
-  spec suite's core board reported 0 failures at `v0.12.0` (see
+  spec suite's core board reported 0 failures at `v0.13.0`, as at `v0.12.0` (see
   [Conformance](concepts.md#conformance-the-spec-suite-board)).
 - **WASI preview 1 commands**, such as Go programs built with `GOOS=wasip1`, through `WASIP1Config.Run` and
   `burroughs run`, with args, env, the standard streams, read-only preopens and writable scratch preopens.
@@ -33,11 +33,8 @@ version number says which conformance milestone was reached.
 - **Component-model threads** (`gate:cm-threads`, phase 1) start through the component paths. They are cooperative
   and run one at a time per instance.
 
-## Limits on default-on paths (from v0.12.0's release notes)
+## Limits on default-on paths (from v0.13.0's release notes)
 
-- **A guest that calls `runtime.LockOSThread` and then needs another M crashes on the Phase 4 fork**
-  ([#1157](https://github.com/scttfrdmn/burroughs/issues/1157), open), with *"fatal error: on a locked thread with no
-  template thread"*. The throw is the fork runtime's own, not the engine's, and the fix is the fork's.
 - **Threads start only where a guest asks.** The `"burroughs" "spawn"` door is served on the WASI preview-1 paths
   (`WASIP1Config.Run`, `burroughs run`). The rest is unchanged from `v0.11.0`:
   - core `Instantiate` supplies no imports, so a core module's shared memory has one agent, and
@@ -45,19 +42,30 @@ version number says which conformance milestone was reached.
   - the public API has no host-side spawn, join, stop or host-function registration (host-started threads are not
     built);
   - a component's `thread.spawn-ref` is refused by name, and `thread.spawn-indirect` is refused at decode.
-- **A shared-everything-threads table is refused as "malformed", not by name**
-  ([#1120](https://github.com/scttfrdmn/burroughs/issues/1120), open). It is still a refusal, but the category is
-  wrong.
-- **`Close` with a zero bound returns `nil` on Windows** where `ErrCloseIncomplete` is wanted
-  ([#945](https://github.com/scttfrdmn/burroughs/issues/945), open). Windows is outside the support claim.
-- **A Go guest's stop-the-world still depends on the fork compiler's inserted loop checks**
-  ([#1064](https://github.com/scttfrdmn/burroughs/issues/1064), open, parked). Contract §3 SP-1 says the guest
-  should not need to instrument itself.
-- **A Go runtime fatal was seen once on CI's arm64 runner** in `internal/spec`
-  ([#1089](https://github.com/scttfrdmn/burroughs/issues/1089), open). It has not recurred.
-- **`array.new*`'s backing allocation is not polled**, so a stop can take more than 1 ms on a GC array of roughly 64
-  Ki elements or more (ADR 0104). This only matters with GC, which is gated off by default and cannot be turned on
-  publicly.
+- **A Go guest's goroutine that spins in a loop that never allocates is never preempted on the Phase 4 fork**
+  ([#1064](https://github.com/scttfrdmn/burroughs/issues/1064), open, parked). Its stop-the-world never completes.
+  Stock Go completes the same program. The work is fork-side preemption. Contract §3 SP-1 says the guest should not
+  need to instrument itself.
+- **A rare Go runtime fatal on CI's arm64 runners** in `internal/spec`
+  ([#1089](https://github.com/scttfrdmn/burroughs/issues/1089), open, unscheduled). It shows only on GitHub's
+  `ubuntu-24.04-arm` runners (Azure Cobalt 100), in about 1 in 1,315 whole-package runs. It was not seen on AWS
+  Graviton3, 4 or 5, on two DGX Sparks, or on x86-64. What a CI run sees is an occasional arm64 red that passes on
+  re-run.
+
+**No longer limits as of `v0.13.0`:**
+- **A shared-everything-threads encoding** is refused by name as `ErrUnsupported`, not as "malformed"
+  ([#1120](https://github.com/scttfrdmn/burroughs/issues/1120), fixed).
+- **A guest that calls `runtime.LockOSThread` and then needs another M** runs on the Phase 4 fork. The fork's fix
+  is merged, and the torture suite's `c4lock` is its witness
+  ([#1157](https://github.com/scttfrdmn/burroughs/issues/1157)).
+- **`Close` with a zero bound on Windows** was dropped from the list
+  ([#945](https://github.com/scttfrdmn/burroughs/issues/945) stays open under the Windows ruling). The test passed
+  in every recent Windows run, and the old test had been racing its own sample.
+
+**Off by default, so not on these paths:** `array.new*`'s backing allocation is not polled, so a stop can take more
+than 1 ms on a GC array of roughly 64 Ki elements or more (ADR 0104,
+[#1138](https://github.com/scttfrdmn/burroughs/issues/1138)). It matters only with GC, which is gated off by default
+and cannot be turned on publicly.
 
 ## Limits of the public surface
 
@@ -92,7 +100,6 @@ version number says which conformance milestone was reached.
 
 ## CLI quirks (observed)
 
-- **`version` always prints `v0.0.1`** ([#1130](https://github.com/scttfrdmn/burroughs/issues/1130), open).
 - **`inspect` does not understand components** (it reports them as malformed).
 - **A component takes no `--dir`, `--scratch` or `--env`, and no function name**: each is refused by name as a usage
   error (exit 2), and its arguments go after `--`. A core module refuses `--features` by name (exit 2). These were
@@ -101,16 +108,6 @@ version number says which conformance milestone was reached.
 - **Caller mistakes on `Instance.Call`** (arity, type, unknown export) match no sentinel, and the CLI maps them to
   exit 1. Since `v0.12.0` a mistyped `Component.Call` argument is classed the same way, as the caller's error
   ([#1129](https://github.com/scttfrdmn/burroughs/issues/1129), fixed).
-
-## Stale doc comments (observed)
-
-These package doc comments say something the code no longer does
-([#1130](https://github.com/scttfrdmn/burroughs/issues/1130), open). The behaviour described in these docs is the
-code's:
-
-- `ComponentConfig` says the value-carrying component surface "has not landed". It has.
-- `ComponentKind` and `ComponentU32` say only `u32` crosses. `string`, `list` and `record` do too.
-- `FeatureThreads` says `gate:threads`' default "is unchanged". It flipped on in `v0.10.0`.
 
 ## Platforms
 

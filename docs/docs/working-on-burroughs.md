@@ -5,7 +5,7 @@ wip: true
 # Working on Burroughs
 
 *For contributors: where the project's records are, how conformance is asked, and how the gates run. This page is
-drawn from the repository as of `v0.12.0` and its main branch on 2026-10-28. The repository's own files win where
+drawn from the repository as of `v0.13.0` and its main branch on 2026-11-11. The repository's own files win where
 they disagree, and the [contract](https://github.com/scttfrdmn/burroughs/blob/main/docs/burroughs-contract-v0.1.md)
 is normative.*
 

@@ -4,7 +4,7 @@ wip: true
 
 # Why Burroughs?
 
-*Written against `v0.12.0`.*
+*Written against `v0.13.0`.*
 
 A Go program compiled to WebAssembly carries a runtime, and that runtime expects things of its host that a
 WebAssembly host is not generally designed to give. Each row below is one of those mismatches. The second column is

@@ -4,7 +4,7 @@ wip: true
 
 # Burroughs user documentation
 
-*Written against `v0.12.0` (tagged 2026-10-28). Every example program, expected output and CLI transcript on these
+*Written against `v0.13.0` (tagged 2026-11-11). Every example program, expected output and CLI transcript on these
 pages is included from this site's `examples/` directory, which the site's CI runs against the latest Burroughs
 release before anything publishes. A code block that is not run that way is labelled as a fragment.*
 
@@ -17,7 +17,7 @@ is how that is checked. Where a design choice has to favour one kind of guest, i
 The pipeline is decoder, then internal form, then validator, then interpreter. **There is no compiler**, and none is
 on the published roadmap.
 
-## Status at v0.12.0, in one screen
+## Status at v0.13.0, in one screen
 
 | Area | State |
 | --- | --- |
@@ -27,7 +27,7 @@ on the published roadmap.
 | Threads (shared memory, atomics, wait/notify) | On by default, on every platform (the release *claim* covers linux and darwin; the default itself does not check the OS). **A `wasip1` guest starts its own threads** through the `"burroughs" "spawn"` import ([#1122](https://github.com/scttfrdmn/burroughs/issues/1122)). Core `Instantiate` starts no second thread, and host-started threads are not built. |
 | GC, exception handling | Gated **off**. The public API cannot turn them on. |
 | WASI preview 1 (`wasip1` commands) | Public path: `WASIP1Config.Run` and `burroughs run`. |
-| Component model, async ABI, component-model threads | On by default. Values that cross the boundary: `u32`, `string`, `list`, `record`. |
+| Component model, async ABI, component-model threads | On by default. Values that cross the boundary: `u32`, `string`, `list`, `record`. Since `v0.13.0`, a component whose core module the spec rejects is refused at load. |
 | WASI 0.2 host for components | Partial: `wasi:cli` and `wasi:io` streams, part of each. Filesystem, clocks, random, sockets and http are absent. |
 | Platforms | 64-bit Linux and macOS are built and tested. Windows runs the tests in CI as a measurement, not a gate, and is unsupported. |
 | Stack switching (contract §7) | Not started. |
@@ -67,7 +67,7 @@ show.
 ## The examples
 
 Every example program lives in this site's repository under `examples/`. Each is its own Go module whose `go.mod`
-requires `github.com/scttfrdmn/burroughs v0.12.0` from the Go module proxy, with no local `replace`. Before the site
+requires `github.com/scttfrdmn/burroughs v0.13.0` from the Go module proxy, with no local `replace`. Before the site
 publishes, its CI (`scripts/run-examples.sh`) resolves the latest Burroughs release tag, points each example at it,
 runs it, and compares what it prints with the committed expected output; any difference fails the build. The
 component fixtures that tutorial 3 and the CLI transcripts use are fetched from the engine repository's
